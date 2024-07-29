@@ -39,4 +39,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tictactoe:${{github.run_id}}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tic-tac-toe:${{github.run_id}}
+
+      - name: scan image
+        run: trivy image hammedakinwale/tic-tac-toe:latest > trivyimage.txt
