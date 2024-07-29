@@ -46,12 +46,15 @@ jobs:
 
   deploy:
     needs: build-analyze-scan
-    runs-on: self-hosted # Use your self-hosted runner label here
+    runs-on: [self-hosted] # Use your self-hosted runner label here
     steps:
       - name: Pull the Docker image
+        env:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
         run: docker pull hammedakinwale/tic-tac-toe:latest
 
-      - name: Trivy image scan
+      - name: trivy image scan
         run: trivy image hammedakinwale/tic-tac-toe:latest # Add Trivy scan command here
 
       - name: Run the container
