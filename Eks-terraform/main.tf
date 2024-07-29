@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
 data "aws_vpcs" "selected" {
   filter {
     name   = "tag:Name"
-    values = ["github-kubernetes-vpc4"]
+    values = ["github-kubernetes-vpc"]
   }
 }
 
