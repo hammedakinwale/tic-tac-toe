@@ -21,17 +21,27 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
   role       = aws_iam_role.example.name
 }
 
-#get vpc data
-data "aws_vpc" "default" {
-  default = true
+# Fetch VPC data by name
+data "aws_vpcs" "selected" {
+  filter {
+    name   = "tag:Name"
+    values = ["github-kubernetes-vpc4"]
+  }
 }
-#get public subnets for cluster
+
+# Extract the first VPC from the list (assuming there's only one matching VPC)
+data "aws_vpc" "selected" {
+  id = data.aws_vpcs.selected.ids[0]
+}
+
+# Get subnets for the specified VPC
 data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
+    values = [data.aws_vpc.selected.id]
   }
 }
+
 #cluster provision
 resource "aws_eks_cluster" "example" {
   name     = "EKS_CLOUD"
