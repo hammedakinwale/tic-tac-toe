@@ -50,8 +50,25 @@ jobs:
     steps:
       - name: Pull the Docker image
         run: docker pull hammedakinwale/tic-tac-toe:latest
+
       - name: Trivy image scan
         run: trivy image hammedakinwale/tic-tac-toe:latest # Add Trivy scan command here
+
       - name: Run the container
         run: docker run -d --name ticgame -p 3000:3000 hammedakinwale/tic-tac-toe:latest
 
+      - name: Update kubeconfig
+        run: aws eks --region us-east-1 update-kubeconfig --name ToDo-App
+
+      - name: Deploy to kubernetes
+        run: kubectl apply -f deployment-service.yml
+
+      - name: Send a Slack Notification
+        if: always()
+        uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#githubactions-logs'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
